@@ -21,5 +21,5 @@ jobs:
       run: python mitre_attack_csv.py
     - name: push
       uses: actions-x/commit@v2
-      files: enterprise-attack.csv
+      files: annotation_mitre_attack.csv
       
