@@ -3,10 +3,17 @@
 import csv
 import json
 import requests
+import markdown
+extensions = ['markdown_link_attr_modifier', ]
+extension_configs = {
+    'markdown_link_attr_modifier': {
+        'new_tab': 'on'
+    },
+}
 
 
 url = "https://github.com/mitre/cti/raw/master/enterprise-attack/enterprise-attack.json"
-outfile = "enterprise-attack.csv"
+outfile = "annotation_mitre_attack.csv"
 
 print("Fetching latest enterprise-attack.json ...")
 d = requests.get(url)
@@ -45,42 +52,11 @@ for t in o['x-mitre-tactic']:
 
 	tactics[short_name] = name
 
-# minature markdown
-import re
-def minimd(s,fmt="text"):
-
-	code = re.compile('<code>(?P<codeblock>.*?)</code>')
-
-	bold = re.compile('\*\*(.*?)\*\*')
-	link = re.compile('\[([^[]*?)\]\((.*?)\)')
-	header = re.compile('(?:^|\n)#+([^\n]*)')
-
-	if fmt=="html":
-		s = code.sub(lambda x: '<code>{}</code>'.format(x.group('codeblock').replace('<','&lt;')), s)
-		s = bold.sub(r'<b>\1</b>',s)
-		s = link.sub(r'<a href="\2">\1</a>', s)
-		s = header.sub(r'<b><u>\1</u></b><br/>',s)
-
-		# rewrite links to mitre page to this one (mitre to internal link)
-		mtil = re.compile('"https://attack.mitre.org/techniques/(?P<technique>.*?)"')
-		s = mtil.sub(lambda x: '"#{}"'.format(x.group('technique').replace('/','.')), s)
-
-		s = s.replace('\n','<br/>')
-
-	elif fmt=="text":
-		# tidy headers
-		s = header.sub(r'# \1 #\n',s)
-	
-		# neaten code
-		s = code.sub(lambda x: '`{}`'.format(x.group('codeblock')), s)
-
-		# rewrite links to mitre page to plaintext
-		mtil = re.compile('https://attack.mitre.org/(techniques|tactics|software)/(?P<technique>[^\])"]+)')
-		s = mtil.sub(lambda x: '{}'.format(x.group('technique').replace('/','.')), s)
-
-		# remove <br>
-		s = s.replace('<br>','\n')
-		
+# Convert to html
+def tohtml(s):
+	s = s.replace('\\n*','\\n')	
+	s = s.encode('ascii', 'xmlcharrefreplace').decode()
+	s = markdown.markdown(s, extensions=extensions, extension_configs=extension_configs)
 
 	return s
 
@@ -105,9 +81,9 @@ for tn in o['attack-pattern']:
 	kill_chain_phases = [tactics[x['phase_name']] for x in kill_chain_phases if x['kill_chain_name']=="mitre-attack"]
 	data_sources = t['x_mitre_data_sources'] if 'x_mitre_data_sources' in t else [] 
 	description = t['description'] if 'description' in t else ""
-	description = minimd(description)
+	description = tohtml(description)
 	detection = t['x_mitre_detection'] if 'x_mitre_detection' in t else ""
-	detection = minimd(detection)
+	detection = tohtml(detection)
 
 	tech[mitre_id] = (name, tn, mitre_url, platforms, kill_chain_phases, data_sources, detection, description)
 
