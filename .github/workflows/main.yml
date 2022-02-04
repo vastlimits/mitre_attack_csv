@@ -20,10 +20,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests
+        pip install markdown
+        pip install markdown-link-attr-modifier
     - name: build
       run: |
         python mitre_attack_csv.py
     - name: push
       uses: actions-x/commit@v2
       with:
-        files: enterprise-attack.csv
+        files: annotation_mitre_attack.csv
