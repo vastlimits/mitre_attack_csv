@@ -76,6 +76,7 @@ for tn in o['attack-pattern']:
 	assert mitre_id!="",f"Didn't find a mitre id for {t}"
 
 	name = t['name'] if 'name' in t else ""
+	name = tohtml(name)
 	platforms = t['x_mitre_platforms'] if 'x_mitre_platforms' in t else []
 	kill_chain_phases = t['kill_chain_phases'] if 'kill_chain_phases' in t else []
 	kill_chain_phases = [tactics[x['phase_name']] for x in kill_chain_phases if x['kill_chain_name']=="mitre-attack"]
