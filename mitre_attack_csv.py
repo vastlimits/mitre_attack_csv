@@ -53,12 +53,34 @@ for t in o['x-mitre-tactic']:
 	tactics[short_name] = name
 
 # Convert to html
-def tohtml(s):
-	s = s.replace('\\n*','\\n')	
-	s = s.encode('ascii', 'xmlcharrefreplace').decode()
-	s = markdown.markdown(s, extensions=extensions, extension_configs=extension_configs)
+def tohtml(s, encodeonly = False):
+	if (encodeonly == True):
+		if type(s) == str:
+			result = s.encode('ascii', 'xmlcharrefreplace').decode()
+		if type(s) is list:
+			result = []
+			for i in s:
+				i = i.encode('ascii', 'xmlcharrefreplace').decode()
+				result.append(i)
+		else:
+			assert (s), "Unexptected type"
 
-	return s
+	else:
+		if type(s) == str:
+			s = s.replace('\\n*','\\n')	
+			s = s.encode('ascii', 'xmlcharrefreplace').decode()
+			result = markdown.markdown(s, extensions=extensions, extension_configs=extension_configs)
+		if type(s) is list:
+			result = []
+			for i in s:
+				i = i.replace('\\n*','\\n')	
+				i = i.encode('ascii', 'xmlcharrefreplace').decode()
+				i = markdown.markdown(i, extensions=extensions, extension_configs=extension_configs)
+				result.append(i)
+		else:
+			assert (s), "Unexptected type"
+
+	return result
 
 print("Generating list of techniques ...")
 # Generate a list of techniques
@@ -76,11 +98,14 @@ for tn in o['attack-pattern']:
 	assert mitre_id!="",f"Didn't find a mitre id for {t}"
 
 	name = t['name'] if 'name' in t else ""
-	name = tohtml(name)
+	name = tohtml(name, True)
 	platforms = t['x_mitre_platforms'] if 'x_mitre_platforms' in t else []
+	platforms = tohtml(platforms, True)
 	kill_chain_phases = t['kill_chain_phases'] if 'kill_chain_phases' in t else []
 	kill_chain_phases = [tactics[x['phase_name']] for x in kill_chain_phases if x['kill_chain_name']=="mitre-attack"]
+	kill_chain_phases = tohtml(kill_chain_phases, True)
 	data_sources = t['x_mitre_data_sources'] if 'x_mitre_data_sources' in t else [] 
+	data_sources = tohtml(data_sources, True)
 	description = t['description'] if 'description' in t else ""
 	description = tohtml(description)
 	detection = t['x_mitre_detection'] if 'x_mitre_detection' in t else ""
@@ -106,3 +131,4 @@ with open(outfile,'w',newline='\n') as out:
 		description = t[7]
 
 		writer.writerow({'name':name, 'id':tid, 'url':mitre_url, 'platforms':platforms, 'kill chain phases':kill_chain_phases, 'description':description, 'data sources':data_sources, 'detection':detection})
+		
