@@ -19,8 +19,6 @@ jobs:
         python-version: 3.9
     - name: build
       run: python mitre_attack_csv.py
-    - name: work around permission issue
-      run: git config --global --add safe.directory /github/workspace
     - name: push
       uses: actions-x/commit@v2
       files: annotation_mitre_attack.csv
