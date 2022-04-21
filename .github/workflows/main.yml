@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: work around permission issue
-      run: git config --global --add safe.directory /github/workspace
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
@@ -27,6 +25,8 @@ jobs:
     - name: build
       run: |
         python mitre_attack_csv.py
+    - name: work around permission issue
+      run: git config --global --add safe.directory /github/workspace
     - name: push
       uses: actions-x/commit@v2
       with:
