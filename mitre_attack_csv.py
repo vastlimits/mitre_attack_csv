@@ -57,13 +57,11 @@ def tohtml(s, encodeonly = False):
 	if (encodeonly == True):
 		if type(s) is str:
 			result = s.encode('ascii', 'xmlcharrefreplace').decode()
-		if type(s) is list:
+		elif type(s) is list:
 			result = []
 			for i in s:
 				i = i.encode('ascii', 'xmlcharrefreplace').decode()
 				result.append(i)
-		if s == '':
-			result = ''
 		else:
 			assert (s), "Unexptected type"
 
@@ -72,15 +70,13 @@ def tohtml(s, encodeonly = False):
 			s = s.replace('\\n*','\\n')	
 			s = s.encode('ascii', 'xmlcharrefreplace').decode()
 			result = markdown.markdown(s, extensions=extensions, extension_configs=extension_configs)
-		if type(s) is list:
+		elif type(s) is list:
 			result = []
 			for i in s:
 				i = i.replace('\\n*','\\n')	
 				i = i.encode('ascii', 'xmlcharrefreplace').decode()
 				i = markdown.markdown(i, extensions=extensions, extension_configs=extension_configs)
 				result.append(i)
-		if s == '':
-			result = ''
 		else:
 			assert (s), "Unexptected type"
 
