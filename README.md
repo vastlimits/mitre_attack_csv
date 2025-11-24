@@ -6,7 +6,7 @@ The uberAgent ESA Splunk app shows MITRE ATT&CK &copy; information for events. T
 
 The CSV gets updated with the latest [ATT&CK Enterprise Techniques](https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json) on a daily basis, if there are any changes to the source.
 
-For more information please visit the [uberAgent documentation](https://uberagent.com/docs)
+For more information please visit the [uberAgent documentation](https://docs.citrix.com/en-us/uberagent/current-release/)
 
 This repository leverages the MITRE ATT&CK Enterprise Techniques data from https://github.com/mitre/cti, but is not associated with MITRE.
 
